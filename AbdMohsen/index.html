@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quote Search Filter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #quote-list {
+      margin-top: 20px;
+      list-style-type: none;
+      padding: 0;
+    }
+    .quote {
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+    }
+    #error-message {
+      color: red;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Quote Search Filter</h1>
+  
+  <label for="search-input">Filter Quotes:</label>
+  <input type="text" id="search-input" placeholder="Enter a word to filter quotes" oninput="filterQuotes()">
+  
+  <ul id="quote-list"></ul>
+  
+  <div id="error-message" style="display: none;">Failed to load quotes. Please try again later.</div>
+  
+  <script>
+    let quotes = [];
+
+    async function fetchQuotes() {
+      try {
+        const response = await fetch('https://dummyjson.com/quotes');
+        if (!response.ok) throw new Error('Failed to fetch quotes.');
+        const data = await response.json();
+        quotes = data.quotes;
+        displayQuotes(quotes);
+      } catch (error) {
+        document.getElementById('error-message').style.display = 'block';
+      }
+    }
+
+    function displayQuotes(filteredQuotes) {
+      const quoteList = document.getElementById('quote-list');
+      quoteList.innerHTML = '';
+
+      filteredQuotes.forEach(quote => {
+        const listItem = document.createElement('li');
+        listItem.classList.add('quote');
+        listItem.textContent = quote.quote;
+        quoteList.appendChild(listItem);
+      });
+    }
+
+    function filterQuotes() {
+      const searchInput = document.getElementById('search-input').value.toLowerCase();
+      const filteredQuotes = quotes.filter(quote => 
+        quote.quote.toLowerCase().includes(searchInput)
+      );
+      displayQuotes(filteredQuotes);
+    }
+
+    fetchQuotes();
+  </script>
+</body>
+</html>
